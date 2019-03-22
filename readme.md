@@ -11,7 +11,7 @@ install commandbox-minify
 
 ## Configuration
 
-put this setting in your Theme.cfc or ModuleConfig.cfc
+put this setting in your `Theme.cfc` or `ModuleConfig.cfc`
 
 make sure that the syntax is valid Json
 
