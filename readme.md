@@ -36,7 +36,7 @@ Call this
 ```bash
 box minify
 ```
-from you project root directory. It will scan for all Theme.cfc and ModuleConfig.cfc files and see if they contain `this.minifyjs`
+from you project root directory. It will scan for all `Theme.cfc` and `ModuleConfig.cfc` files and see if they contain `this.minifyjs = {"jsfiles" : []}`
 
 
 ADVANCED_OPTIMIZATIONS options - be carefull with this, better don't choose it

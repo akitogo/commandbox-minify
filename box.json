@@ -9,12 +9,12 @@
     "homepage":"",
     "documentation":"",
     "repository":{
-        "type":"",
-        "URL":""
+        "type":"Git",
+        "URL":"https://github.com/akitogo/commandbox-minify.git"
     },
     "bugs":"",
     "slug":"commandbox-minify",
-    "shortDescription":"Cool module combines and minifies JavaScript files",
+    "shortDescription":"A Commandbox module that combines and minifies JavaScript files",
     "description":"",
     "instructions":"",
     "changelog":"",
@@ -40,11 +40,6 @@
     "dependencies":{},
     "devDependencies":{},
     "installPaths":{},
-    "scripts":{
-        "postVersion":"",
-        "onRelease":"",
-        "postPublish":""
-    },
     "ignore":[
         "test",
         "tests"
