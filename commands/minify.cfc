@@ -1,84 +1,65 @@
-component extends="commandbox.system.BaseCommand" aliases="minify js" excludeFromHelp=false {
+component extends="commandbox.system.BaseCommand" aliases="minify" excludeFromHelp=false {
 
-	//property name="javaLoader"		inject="loader@cbjavaloader";
+	property name="shell"						inject="shell";
+	property name="jscomplier"					inject="js@commandbox-minify";
 
 	/**
-	 * @pain.hint Set to true for maximum chuck information
+	 *
 	 **/
+
 	function run() {
+		var jscomplier = getInstance("js@commandbox-minify");
 
-		// find theme path and read settings
-		var themePath 		= fileSystemUtil.resolvePath( './modules/contentbox/themes/akitogo/Theme.cfc' );
-		var fileString 		= FileRead(themePath);
-		var setting 	  	= REMatch('{[ ]*"jsfiles(.*)};', fileString );
-		var settingNS 		= '';
-		var settingStruct   = '';
+		var currentDirectory 	= shell.pwd();
+		var allConfigs 			= directoryList(path = currentDirectory, recurse=true, listInfo = 'path', filter='ModuleConfig.cfc|Theme.cfc');
 
-		// make sure it is valid json, create a struct
-		if( setting[1] neq '' ){
-			settingNS = Replace(setting[1], '};', '}');
-			settingStruct 	= deserializeJson(settingNS);
-		}else{
-			systemoutput('Settings not found!');abort;
-		}
+		var cnt = 0;
+		print.Line( 'Checking configs' ).toConsole();
 
-		// find jar path
-		var path		= getDirectoryFromPath( getCurrentTemplatePath() );
-		var jarPath 	= expandpath(path&'../lib/closure-compiler.jar');
+		for (var confPath in allConfigs){
+			print.Line( 'Read '&confPath ).toConsole();
+			
+			var fileString 		= FileRead(confPath);
+			var setting 	  	= REMatch('{[ ]*"jsfiles(.*)};', fileString );
 
-		var inputPath 		= '';
-		if( find('.',settingStruct['entryDirectory']) )
-			inputPath		= fileSystemUtil.resolvePath( settingStruct['entryDirectory'] );
-		inputPath 		= fileSystemUtil.resolvePath( './#settingStruct['entryDirectory']#' );
-
-		var outputPath 		= '';
-		if( find('.',settingStruct['outputDirectory']) )
-			outputPath		= fileSystemUtil.resolvePath( settingStruct['outputDirectory'] );
-		outputPath 		= fileSystemUtil.resolvePath( './#settingStruct['outputDirectory']#' );
-
-		var Compiler 		= createObject( "java", "com.google.javascript.jscomp.Compiler", jarPath ).init();
-		var CompilerOptions = createObject( "java", "com.google.javascript.jscomp.CompilerOptions", jarPath ).init();
-
-		// can set this true for debug
-		CompilerOptions.setPrettyPrint( javaCast( "boolean", false ) );
-
-		if( settingStruct['Optimisation'] neq "none" ){
-			switch( settingStruct['Optimisation'] ) {
-			    case "WHITESPACE_ONLY":
-					var AdvancedOptimizations = createObject( "java", "com.google.javascript.jscomp.CompilationLevel", jarPath )
-					.WHITESPACE_ONLY.setOptionsForCompilationLevel( CompilerOptions );
-			    	break;
-			    case "SIMPLE_OPTIMIZATIONS":
-					var AdvancedOptimizations = createObject( "java", "com.google.javascript.jscomp.CompilationLevel", jarPath )
-					.SIMPLE_OPTIMIZATIONS.setOptionsForCompilationLevel( CompilerOptions );
-			        break;
-			    case "ADVANCED_OPTIMIZATIONS":
-					var AdvancedOptimizations = createObject( "java", "com.google.javascript.jscomp.CompilationLevel", jarPath )
-					.ADVANCED_OPTIMIZATIONS.setOptionsForCompilationLevel( CompilerOptions );
-			        break;
-			    default:
-			         // do nothing
+			// make sure it is valid json, create a struct
+			if( arrayLen(setting) && setting[1] neq '' ){
+				var settingNS 		= Replace(setting[1], '};', '}');
+				if(!isJson(settingNS)){
+					print.Line( confPath&' contains config, but is not valid Json' ).toConsole();
+					continue;
+				}
+				var settingStruct 	= deserializeJson(settingNS);
+				var jsFiles 		= settingStruct['jsfiles'];
+				cnt++;
+			} else {
+				continue;
 			}
+
+			var source 		= '';
+			inputPath 		= currentDirectory & settingStruct['sourceDirectory'];
+			
+			cnt = 1; 
+			for (var jsFile in jsFiles){
+				//if(!listLen( jsFile, '\/' ))
+				jsFiles[cnt] = fileSystemUtil.resolvePath( jsFile, inputPath );
+
+				print.Line( jsFile ).toConsole();
+				cnt++;
+			}
+
+			var destination 		= '';
+			if( find('.',settingStruct['destinationDirectory']) )
+				destination		= fileSystemUtil.resolvePath( settingStruct['destinationDirectory'] );
+			else
+				destination 		= fileSystemUtil.resolvePath( './#settingStruct['destinationDirectory']#' );
+
+			jscomplier.compile(jsFiles,destination,settingStruct['name']);
+
 		}
 
-		var externs = [];
-		var input = [];
+		systemOutput( 'Files parsed: #cnt#', 1 );
 
-		for (i=1;i<=arrayLen(settingStruct['jsfiles']);i++) {
-			var inputFile = expandPath(inputPath&"/#settingStruct['jsfiles'][i]#");
-			var tmpInput = createObject( "java", "com.google.javascript.jscomp.SourceFile", jarPath ).fromCode(
-			javaCast( "string", getFileFromPath( inputFile ) ),
-			javaCast( "string", fileRead( inputFile ) ));
-			arrayAppend(input,tmpInput);
-		}
-
-		var	result = compiler.compile(
-			externs,
-			input,
-			CompilerOptions
-		);
-
-		FileWrite( expandPath( outputPath&"/#settingStruct['name']#.js" ), compiler.toSource() );
 	}
 
 }
