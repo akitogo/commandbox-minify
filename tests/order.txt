@@ -1,7 +1,0 @@
-jquery-1.12.4.js
-bootstrap.js
-one-page-nav.js
-jquery.validate.js
-slick.js
-plugins.js
-main.js
