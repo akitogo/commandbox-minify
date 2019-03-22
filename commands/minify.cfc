@@ -14,10 +14,10 @@ component extends="commandbox.system.BaseCommand" aliases="minify" excludeFromHe
 		var allConfigs 			= directoryList(path = currentDirectory, recurse=true, listInfo = 'path', filter='ModuleConfig.cfc|Theme.cfc');
 
 		var cnt = 0;
-		print.Line( 'Checking configs' ).toConsole();
+		//print.Line( 'Checking configs' ).toConsole();
 
 		for (var confPath in allConfigs){
-			print.Line( 'Read '&confPath ).toConsole();
+			//print.Line( 'Read '&confPath ).toConsole();
 			
 			var fileString 		= FileRead(confPath);
 			var setting 	  	= REMatch('{[ ]*"jsfiles(.*)};', fileString );
@@ -39,13 +39,13 @@ component extends="commandbox.system.BaseCommand" aliases="minify" excludeFromHe
 			var source 		= '';
 			inputPath 		= currentDirectory & settingStruct['sourceDirectory'];
 			
-			cnt = 1; 
+			var ac = 1; 
 			for (var jsFile in jsFiles){
 				//if(!listLen( jsFile, '\/' ))
-				jsFiles[cnt] = fileSystemUtil.resolvePath( jsFile, inputPath );
+				jsFiles[ac] = fileSystemUtil.resolvePath( jsFile, inputPath );
 
-				print.Line( jsFile ).toConsole();
-				cnt++;
+				// print.Line( jsFile ).toConsole();
+				ac++;
 			}
 
 			var destination 		= '';
