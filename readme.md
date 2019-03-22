@@ -1,6 +1,6 @@
 ﻿# A Commandbox module combines and minifies JavaScript files
 
-Please note: This project is at a very early stage. It uses Google Closure Compiler for compession and minification
+Please note: This project is at a very early stage. It uses Google Closure Compiler for compression and minification
 
 ## Installation
 
