@@ -12,7 +12,10 @@ component  {
         var compilerOptions = getCompilerOptions();
 
 		// can set this true for debug
-		CompilerOptions.setPrettyPrint( javaCast( "boolean", false ) );
+        CompilerOptions.setPrettyPrint( javaCast( "boolean", false ) );
+        
+        // there are still messages
+        createObject( "java", "com.google.javascript.jscomp.WarningLevel", getcompilerJarPath() ).QUIET.setOptionsForWarningLevel( CompilerOptions );
 
         if( optimization neq "none" )
             getAdvancedOptimizations( optimization, CompilerOptions );
@@ -86,7 +89,7 @@ component  {
 		// find jar path
 		var path		=   getDirectoryFromPath( getCurrentTemplatePath() );
 
-        return expandpath(path&'../lib/closure-compiler.jar');
+        return expandpath(path&'../lib/closure-compiler-v20190301.jar');
     }           
 
     /**

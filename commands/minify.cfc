@@ -1,27 +1,30 @@
 component extends="commandbox.system.BaseCommand" aliases="minify" excludeFromHelp=false {
 
 	property name="shell"						inject="shell";
-	property name="progressBarGeneric" 			inject="progressBarGeneric";
+	property name="progressBarGeneric" 			inject="progressBarGeneric";	// this is not working with 4.6
 
-	property name="jscomplier"					inject="js@commandbox-minify";
+	property name="jscomplier"					inject="js@commandbox-minify";	// this is not working with 4.5 and 4.6
 
 	/**
 	 *
 	 **/
 
 	function run() {
+		var progressBarGeneric = getInstance( 'progressBarGeneric' );
 		var jscomplier = getInstance("js@commandbox-minify");
 
 		var currentDirectory 	= shell.pwd();
 		var allConfigs 			= directoryList(path = currentDirectory, recurse=true, listInfo = 'path', filter='ModuleConfig.cfc|Theme.cfc');
 
 		var cnt = 0;
+		var pgr = 0;
 		//print.Line( 'Checking configs' ).toConsole();
 		progressBarGeneric.update( percent=0 );
 
 		for (var confPath in allConfigs){
+			pgr++;
 			//print.Line( 'Read '&confPath ).toConsole();
-			progressBarGeneric.update( percent=25, currentCount=cnt*100/arrayLen(allConfigs), totalCount=arrayLen(allConfigs) );
+			progressBarGeneric.update( percent=pgr*100/arrayLen(allConfigs), currentCount=pgr, totalCount=arrayLen(allConfigs) );
 		
 			var fileString 		= FileRead(confPath);
 			var setting 	  	= REMatch('{[ ]*"jsfiles(.*)};', fileString );
@@ -57,12 +60,10 @@ component extends="commandbox.system.BaseCommand" aliases="minify" excludeFromHe
 				progressBarGeneric.clear();
 				abort;
 			}
-			var x = getinstance("adler32@commandbox-minify");
 
 			jscomplier.compile(jsFiles,destination,settingStruct['name']);
 
 		}
-		progressBarGeneric.clear();
 
 		systemOutput( 'Files checked: #arrayLen(allConfigs)#. Files parsed: #cnt#', 1 );
 
