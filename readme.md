@@ -41,5 +41,13 @@ from you project root directory. It will scan for all `Theme.cfc` and `ModuleCon
 
 ADVANCED_OPTIMIZATIONS options - be carefull with this, better don't choose it
 
+## Vesions
 
+0.2
+* updated Closure Compliler to latest jar
+* added progress bar
+* suppress warnings
+* fixes
+
+0.1 initial
 
