@@ -1,5 +1,4 @@
 component  {
-
     function init() {
         return this;
     }
@@ -25,8 +24,8 @@ component  {
                 getInputArray(jsFiles),
                 CompilerOptions
         );
-
-        FileWrite( expandPath( destination&"/#name#.js" ), compiler.toSource() );            
+        var ad32 = adler32(compiler.toSource());
+        FileWrite( destination&"/#name#-#ad32#.js" , compiler.toSource() );            
     }
 
     /**
@@ -90,5 +89,17 @@ component  {
         return expandpath(path&'../lib/closure-compiler.jar');
     }           
 
-
+    /**
+    * I compute the Adler-32 checksum for the given string. (From the Java docs) An
+    * Adler-32 checksum is almost as reliable as a CRC-32 but can be computed much
+    * faster.
+    *
+    * @input I am the input being checked.
+    * @output false
+    */
+    public numeric function adler32( required string input ) {
+        var checksum = createObject( "java", "java.util.zip.Adler32" ).init();
+        checksum.update( charsetDecode( input, "utf-8" ) );
+        return( checksum.getValue() );
+    }
 }

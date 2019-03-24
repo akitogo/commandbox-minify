@@ -1,21 +1,8 @@
 component{
-    // Module Properties
-    this.modelNamespace = "commandbox-minify";
-    this.cfmapping 		= "commandbox-minify";
-    this.dependencies 	= [  ];
+	this.autoMapModels = true;
+
 
     function configure(){
-
-    
-        // Declare some interceptors to listen
-        interceptors = [
-    
-        ];
-
-        // Ad-hoc interception events I will announce myself
-        interceptorSettings = {
-            customInterceptionPoints = ''
-        };
 
 
     }

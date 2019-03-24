@@ -1,6 +1,8 @@
 component extends="commandbox.system.BaseCommand" aliases="minify" excludeFromHelp=false {
 
 	property name="shell"						inject="shell";
+	property name="progressBarGeneric" 			inject="progressBarGeneric";
+
 	property name="jscomplier"					inject="js@commandbox-minify";
 
 	/**
@@ -15,10 +17,12 @@ component extends="commandbox.system.BaseCommand" aliases="minify" excludeFromHe
 
 		var cnt = 0;
 		//print.Line( 'Checking configs' ).toConsole();
+		progressBarGeneric.update( percent=0 );
 
 		for (var confPath in allConfigs){
 			//print.Line( 'Read '&confPath ).toConsole();
-			
+			progressBarGeneric.update( percent=25, currentCount=cnt*100/arrayLen(allConfigs), totalCount=arrayLen(allConfigs) );
+		
 			var fileString 		= FileRead(confPath);
 			var setting 	  	= REMatch('{[ ]*"jsfiles(.*)};', fileString );
 
@@ -36,8 +40,7 @@ component extends="commandbox.system.BaseCommand" aliases="minify" excludeFromHe
 				continue;
 			}
 
-			var source 		= '';
-			inputPath 		= currentDirectory & settingStruct['sourceDirectory'];
+			var inputPath 		= currentDirectory & settingStruct['sourceDirectory'];
 			
 			var ac = 1; 
 			for (var jsFile in jsFiles){
@@ -48,17 +51,20 @@ component extends="commandbox.system.BaseCommand" aliases="minify" excludeFromHe
 				ac++;
 			}
 
-			var destination 		= '';
-			if( find('.',settingStruct['destinationDirectory']) )
-				destination		= fileSystemUtil.resolvePath( settingStruct['destinationDirectory'] );
-			else
-				destination 		= fileSystemUtil.resolvePath( './#settingStruct['destinationDirectory']#' );
+			var destination 		= currentDirectory&settingStruct['destinationDirectory'];
+			if ( !directoryExists(destination) ) {
+				print.blackOnRedLine( 'Destination directory: #destination# is not valid' ).toConsole();
+				progressBarGeneric.clear();
+				abort;
+			}
+			var x = getinstance("adler32@commandbox-minify");
 
 			jscomplier.compile(jsFiles,destination,settingStruct['name']);
 
 		}
+		progressBarGeneric.clear();
 
-		systemOutput( 'Files parsed: #cnt#', 1 );
+		systemOutput( 'Files checked: #arrayLen(allConfigs)#. Files parsed: #cnt#', 1 );
 
 	}
 
