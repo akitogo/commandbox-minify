@@ -44,7 +44,7 @@ ADVANCED_OPTIMIZATIONS options - be carefull with this, better don't choose it
 ## Versions
 
 0.2
-* updated Closure Compliler to latest jar
+* updated Closure Compiler to latest jar
 * added progress bar
 * suppress warnings
 * fixes
