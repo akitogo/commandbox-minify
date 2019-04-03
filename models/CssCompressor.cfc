@@ -1,26 +1,56 @@
-component {
+/**
+ * 
+ * This is a cfml port of YUI Compressor
+ * CFML version written by
+ * Author: Matthias Richter
+ * https://www.akitogo.com
+ * 
+ * How to use:
+ *      var themefiles  = [
+ *								'bootstrap41/css/bootstrap.min.css',
+ *								'justified/justifiedGallery.min.css',
+ *								'css/custom.css'
+ *						  ];
+ *		var cssfiles	= [];
+ *		for( var f in themefiles ) {
+ *			arrayAppend( cssfiles, expandPath( "/modules/theme/includes/#f#" ) );
+ *		}
+ *		csscompressor.add( cssfiles );
+ *		var file	= csscompressor.compress( expandPath( "/modules/theme/includes/css/" ) );
+ *		writedump( file );
+ *
+ *
+ * Original Java Version:
+ * YUI Compressor
+ * http://developer.yahoo.com/yui/compressor/
+ * Author: Julien Lecomte -  http://www.julienlecomte.net/
+ * Author: Isaac Schlueter - http://foohack.com/
+ * Author: Stoyan Stefanov - http://phpied.com/
+ * Contributor: Dan Beam - http://danbeam.org/
+ * Copyright (c) 2013 Yahoo! Inc.  All rights reserved.
+ * The copyrights embodied in the content of this file are licensed
+ * by Yahoo! Inc. under the BSD (revised) open source license.
+ */
+component transient {
 
 	property name = "srcsb";
-	property name = "files";
-
-	private function newStringBuffer() {
-		return createObject( "java", "java.lang.StringBuffer" );
-	}
-
-	private function newPattern( required String tocompile ) {
-		return createObject( "java", "java.util.regex.Pattern" ).compile( arguments.tocompile );
-	}
-
-	private function getMainStringBuffer() {
-		return variables.srcsb;
-	}
+    property name = "files";
+    
+    /**
+     * init
+     */
 
 	public CssCompressor function init() {
 		variables.srcsb	= this.newStringBuffer();
 		variables.files	= [];
 		return this;
-	}
+    }
 
+    /**
+     * add files as path before compressing
+     * 
+     * @addfiles
+     */    
 	public CssCompressor function add( required  Any addfiles ) {
 		if( not isArray( arguments.addfiles ) ) {
 			arguments.addfiles	= [ arguments.addfiles ];
@@ -31,14 +61,19 @@ component {
 		return this;
 	}
 
-	public String function compress( required String cssdir ) {
+    /**
+     * compress an merge all files
+     * 
+     * @cssdir
+     */  
+	public String function compress( required string name, required String cssdir ) {
 		this.prepareStringBuffer();
 
 		var css				= this.getMainStringBuffer().toString();
 		var sb				= this.newStringBuffer().append( css );
 		var startIndex		= 0;
 		var endIndex		= 0;
-		var totallen		= css.length();
+		var totalLen		= css.length();
 		var token			= '';
 		var placeholder		= '';
 		var comments		= [];
@@ -50,7 +85,7 @@ component {
 		while( startIndex gte 0 ) {
             endIndex = sb.indexOf( "*/", startIndex + 2 );
             if (endIndex < 0 ) {
-                endIndex = totallen;
+                endIndex = totalLen;
             }
 
             token = sb.substring( startIndex + 2, endIndex );
@@ -449,17 +484,19 @@ component {
 
         // Trim the final string (for any leading or trailing white spaces)
 		css 		= css.trim();
-
-		var file	= arguments.cssdir & hash( css ) & ".css";
+        var fname   = arguments.name & '-' & adler32( css ) & ".css"
+		var file	= arguments.cssdir & '/' & fname;
 		if( fileExists( file ) )
 			fileDelete( file );
 		fileWrite( file, css );
 
 
-		return file;
+		return fname;
 	}
 
-
+    /**
+     * add files to string buffer
+     */
 	private void function prepareStringBuffer() {
 		for( var f in variables.files ) {
 			if( fileExists( f ) ) {
@@ -469,6 +506,15 @@ component {
 		}
 	}
 
+    /**
+     * preserveToken
+     *
+     * @css 
+     * @preservedToken 
+     * @tokenRegex 
+     * @removeWhiteSpace 
+     * @preservedTokens 
+     */
 	private String function preserveToken( required String css, required String preservedToken, required String tokenRegex, required boolean removeWhiteSpace, required array preservedTokens ) {
 
         var maxIndex 		= arguments.css.length() - 1;
@@ -531,11 +577,50 @@ component {
         return sb.toString();
 	}
 
+    /**
+     * stringToHex
+     *
+     * @tocompile 
+     */
 	private String function stringToHex( required String stringValue ){
         var binaryValue 	= stringToBinary( stringValue );
         var hexValue 		= binaryEncode( binaryValue, "hex" );
         return( lcase( hexValue ) );
     }
 
+    /**
+     * returns Java String Buffer
+     */
+    private function newStringBuffer() {
+		return createObject( "java", "java.lang.StringBuffer" );
+	}
+
+    /**
+     * returns complied java.util.regex.Pattern
+     */
+	private function newPattern( required String tocompile ) {
+		return createObject( "java", "java.util.regex.Pattern" ).compile( arguments.tocompile );
+	}
+
+    /**
+     * getMainStringBuffer
+     */
+	private function getMainStringBuffer() {
+		return variables.srcsb;
+    }
+    
+    /**
+    * I compute the Adler-32 checksum for the given string. (From the Java docs) An
+    * Adler-32 checksum is almost as reliable as a CRC-32 but can be computed much
+    * faster.
+    *
+    * @input I am the input being checked.
+    * @output false
+    */
+    public numeric function adler32( required string input ) {
+        var checksum = createObject( "java", "java.util.zip.Adler32" ).init();
+        checksum.update( charsetDecode( input, "utf-8" ) );
+        return( checksum.getValue() );
+    }
 
 }

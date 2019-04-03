@@ -1,6 +1,6 @@
 {
     "name":"commandbox-minify",
-    "version":"0.2.0",
+    "version":"0.3.0",
     "author":"Dmitry Romanchuk,Gunnar Lieb",
     "location":"",
     "directory":"",
@@ -14,12 +14,12 @@
     },
     "bugs":"",
     "slug":"commandbox-minify",
-    "shortDescription":"A Commandbox module that combines and minifies JavaScript files",
+    "shortDescription":"A Commandbox module that combines and minifies JavaScript and CSS files",
     "description":"",
     "instructions":"",
     "changelog":"",
     "type":"commandbox-modules",
-    "keywords":"minify,JavaScript",
+    "keywords":"minify,JavaScript,CSS",
     "private":false,
     "engines":[
         {

@@ -27,8 +27,11 @@ component  {
                 getInputArray(jsFiles),
                 CompilerOptions
         );
-        var ad32 = adler32(compiler.toSource());
-        FileWrite( destination&"/#name#-#ad32#.js" , compiler.toSource() );            
+        var ad32    = adler32(compiler.toSource());
+        var fName   = "#name#-#ad32#.js";
+        FileWrite( destination&"/"&fname , compiler.toSource() );    
+        
+        return fName;        
     }
 
     /**
