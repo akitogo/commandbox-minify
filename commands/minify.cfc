@@ -25,14 +25,14 @@ component extends="commandbox.system.BaseCommand" aliases="minify" excludeFromHe
 			//print.Line( 'Read '&confPath ).toConsole();
 			progressBarGeneric.update( percent=pgr*100/arrayLen(allConfigs), currentCount=pgr, totalCount=arrayLen(allConfigs) );
 		
-			var settingSting	 = parseForSettings(confPath);
+			var settingString	 = parseForSettings(confPath);
 
-			if (settingSting eq "")
+			if (settingString eq "")
 				continue;
 			
-			var settingArray	= deserializeJSON(settingSting);
+			var settingArray	= deserializeJSON(settingString);
 			if(!isArray(settingArray)){
-				print.whiteOnRedLine( 'Setting struct must be an array of structs' ).toConsole();
+				print.whiteOnRedLine( 'Setting struct must be an array of structs in file #confPath#' ).toConsole();
 				continue;
 			}
 
@@ -54,30 +54,47 @@ component extends="commandbox.system.BaseCommand" aliases="minify" excludeFromHe
 				
 				var destination 	= currentDirectory&aSetting['destinationDirectory'];
 				validateDestination(destination,progressBarGeneric);
-				
-				switch (expression) {
+				switch (aSetting['type']) {
 					case "js":
-						var fName 					= jscomplier.compile(fileArray,destination,aSetting['name']);
-						var updatedSettingString	= rereplace(settingSting,'"minified"[ ]*:[ ]*"[^"]*"','"minified":"#fName#"');
-						fileWrite(confPath,replace(fileRead(confPath),settingSting,updatedSettingString));
-						break;
-						
+					var fileNameOfCompressed	= jscomplier.compile(fileArray,destination,aSetting['name']);
+					break;
+					
 					case "css":
-						cssCompressor.add( fileArray );
-						var fName 					= csscompressor.compress( aSetting['name'], destination );
-
-						var updatedSettingString	= rereplace(settingSting,'"minified"[ ]*:[ ]*"[^"]*"','"minified":"#fName#"');
-						fileWrite(confPath,replace(fileRead(confPath),settingSting,updatedSettingString));						
-						break;
+					cssCompressor.add( fileArray );
+					var fileNameOfCompressed	= csscompressor.compress( aSetting['name'], destination );
+					break;
+					
+					default:
+					throw('type must be either CSS or JS in #confpath#');
+					break;
 				}
+				updateSettingString(confPath,fileArrayName,settingString,fileNameOfCompressed);
 			}
-
+				
 		}
+			
+		systemOutput( 'ModuleConfig.cfc or Theme.cfc files checked: #arrayLen(allConfigs)#. Settings parsed: #cnt#', 1 );
+			
+	}
+	
+	/**
+	 * updates ModuleConfig or theme file
+	 **/	
+		void function updateSettingString(string confpath,string name, string settingString, string fileNameOfCompressed) {
+		// find all struct in json array
+		// {[],[]}
+		var singleJsonStructs	= refind('\{[ ]*[^}]+\}',settingString,1,true,'all');
+		for (var el in singleJsonStructs){
+			if(find('"#arguments.name#"',el.match[1])){
+				var changed = rereplace(el.match[1],'"minified"[ ]*:[ ]*"[^"]*"','"minified":"#fileNameOfCompressed#"');
+				fileWrite(confPath,replace(fileRead(confPath),el.match[1],changed));
+				return;
+			}
+		}
+		print.whiteOnRedLine( 'Could not find and replace #arguments.name# in #confPath#' ).toConsole();
 
-		systemOutput( 'ModuleConfig.cfc or Theme.cfc files checked: #arrayLen(allConfigs)#. Files parsed: #cnt#', 1 );
 
 	}
-
 	/**
 	 *
 	 **/	
