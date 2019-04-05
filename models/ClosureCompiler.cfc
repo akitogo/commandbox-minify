@@ -1,4 +1,3 @@
-<cfscript>
 //actually not used
 component
 	output = false
@@ -557,5 +556,3 @@ component
 	}
 
 }
-
-</cfscript>

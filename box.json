@@ -1,7 +1,7 @@
 {
     "name":"commandbox-minify",
     "version":"0.3.0",
-    "author":"Dmitry Romanchuk,Gunnar Lieb",
+    "author":"Dmitry Romanchuk,Gunnar Lieb,Matthias Richter",
     "location":"",
     "directory":"",
     "createPackageDirectory":true,
@@ -9,8 +9,8 @@
     "homepage":"",
     "documentation":"",
     "repository":{
-        "type":"Git",
-        "URL":"https://github.com/akitogo/commandbox-minify.git"
+        "type":"github",
+        "URL":"https://github.com/akitogo/commandbox-minify"
     },
     "bugs":"",
     "slug":"commandbox-minify",

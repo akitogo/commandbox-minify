@@ -30,30 +30,26 @@ component extends="commandbox.system.BaseCommand" aliases="minify" excludeFromHe
 			if (settingString eq "")
 				continue;
 			
-			var settingArray	= deserializeJSON(settingString);
-			if(!isArray(settingArray)){
-				print.whiteOnRedLine( 'Setting struct must be an array of structs in file #confPath#' ).toConsole();
+			var settingStruct	= deserializeJSON(settingString);
+			if(!isStruct(settingStruct)){
+				print.whiteOnRedLine( 'Setting struct is not a struct #confPath#' ).toConsole();
 				continue;
 			}
 
-			for (var aSetting in settingArray){
-				var fileArrayName = "";
-				// find list of files which have to be an array
-				for (var oneKey in aSetting){
-					if(isArray(aSetting[oneKey])){
-						fileArrayName = oneKey;
-						break;
-					}
-				}
+			for (var keyname in settingStruct){
+				var aSetting 		= settingStruct[keyname];
+				
 				// js files
-				var fileArray 		= aSetting[fileArrayName];
+				var fileArray 		= settingStruct[keyname].files;
 				cnt++;
 				
 				var inputPath 		= currentDirectory & aSetting['sourceDirectory'];
 				fileArray			= buildFileList( inputPath, fileArray );
 				
 				var destination 	= currentDirectory&aSetting['destinationDirectory'];
+
 				validateDestination(destination,progressBarGeneric);
+				
 				switch (aSetting['type']) {
 					case "js":
 					var fileNameOfCompressed	= jscomplier.compile(fileArray,destination,aSetting['name']);
@@ -68,7 +64,7 @@ component extends="commandbox.system.BaseCommand" aliases="minify" excludeFromHe
 					throw('type must be either CSS or JS in #confpath#');
 					break;
 				}
-				updateSettingString(confPath,fileArrayName,settingString,fileNameOfCompressed);
+				updateSettingString(confPath,keyname,settingString,fileNameOfCompressed);
 			}
 				
 		}
@@ -83,7 +79,7 @@ component extends="commandbox.system.BaseCommand" aliases="minify" excludeFromHe
 		void function updateSettingString(string confpath,string name, string settingString, string fileNameOfCompressed) {
 		// find all struct in json array
 		// {[],[]}
-		var singleJsonStructs	= refind('\{[ ]*[^}]+\}',settingString,1,true,'all');
+		var singleJsonStructs	= refind('"[a-zA-Z]+"[ ]*:[^}]+\}',settingString,1,true,'all');
 		for (var el in singleJsonStructs){
 			if(find('"#arguments.name#"',el.match[1])){
 				var changed = rereplace(el.match[1],'"minified"[ ]*:[ ]*"[^"]*"','"minified":"#fileNameOfCompressed#"');
@@ -111,11 +107,11 @@ component extends="commandbox.system.BaseCommand" aliases="minify" excludeFromHe
 	 **/
 	string function parseForSettings(string confPath) {
 		var fileString 		= FileRead(confPath);
-		var setting 	  	= REMatch('this\.minify[ ]*=[^;]+\];', fileString );
+		var setting 	  	= REMatch('this\.minify[ ]*=[^;]+\};', fileString );
 
 		// make sure it is valid json, create a struct
 		if( arrayLen(setting) && setting[1] neq '' ){
-			var settingNS 		= Replace(setting[1], '];', ']');
+			var settingNS 		= Replace(setting[1], '};', '}');
 			settingNS 			= reReplaceNoCase(settingNS, 'this\.minify[ ]*=', '');
 			if(!isJson(settingNS)){
 				print.Line( confPath&' contains config, but is not valid Json' ).toConsole();
