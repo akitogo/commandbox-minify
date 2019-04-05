@@ -16,7 +16,7 @@ Call this (if you want to use it with Coldbox)
 ```bash
 box minify
 ```
-from you project root directory. It will scan for all `Theme.cfc` and `ModuleConfig.cfc` files and see if they contain `this.minifyjs = {"jsfiles" : []}`
+from you project root directory. It will scan for all `Theme.cfc` and `ModuleConfig.cfc` files and see if they contain `this.minifyjs = { "nameItAsYouLike" :  {}, "nameItAsYouLike2" :  {} }`
 
 
 ADVANCED_OPTIMIZATIONS options - be carefull with this, better don"t choose it
