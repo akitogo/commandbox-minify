@@ -1,6 +1,5 @@
 ﻿# A Commandbox module combines and minifies JavaScript and CSS files
 
-Please note: This project is at a early stage. 
 It uses Google Closure Compiler for compression and minification of JS files.
 For CSS a CFML port of YUI compressor is used.
 
@@ -20,7 +19,7 @@ Call this (if you want to use it with Coldbox)
 ```bash
 box minify
 ```
-from your project root directory. It will scan for all `Theme.cfc` and `ModuleConfig.cfc` files and see if they contain `this.minify = { "nameItAsYouLike" :  {}, "nameItAsYouLike2" :  {} }`
+from your project root directory. It will scan for all `Theme.cfc` and `ModuleConfig.cfc` files and sees if any contains `this.minify = { "nameItAsYouLike" :  {}, "nameItAsYouLike2" :  {} }`
 
 Make sure that `this.minify` is a valid json. Currently a regex is used to find and parse it.
 
@@ -65,6 +64,9 @@ make sure that the syntax is valid Json
 	}
    	};
 ```
+## If used without Coldbox
+
+You can place a `Theme.cfc` anywhere in your project. It should be a `cfc`. Add at least `this.minify` structure as mentionted above
 
 ## Versions
 0.4
