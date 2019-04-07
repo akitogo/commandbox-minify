@@ -14,7 +14,7 @@ box install commandbox-minify
 ## Usage
 `box minifycss "path/to/css/files/*"` or `box mcss "path/to/css/files/*"` for compressing css files from a location
 
-`box minifjs "path/to/js/files/*"` or `box js "path/to/js/files/*"` for compressing js files from a location
+`box minifjs "path/to/js/files/*"` or `box mjs "path/to/js/files/*"` for compressing js files from a location
 
 Call this (if you want to use it with Coldbox)
 ```bash
