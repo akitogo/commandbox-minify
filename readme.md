@@ -66,7 +66,7 @@ make sure that the syntax is valid Json
 ```
 ## If used without Coldbox
 
-You can place a `Theme.cfc` anywhere in your project. It should be a `cfc`. Add at least `this.minify` structure as mentionted above
+You can place a `Theme.cfc` anywhere in your project. Add at least `this.minify` structure as mentioned above
 
 ## Versions
 0.4
