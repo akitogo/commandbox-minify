@@ -1,11 +1,48 @@
+/**
+ * Call this (if you want to use it with Coldbox)
+ * {code:bash}
+ * minify
+ * {bash}
+ * .
+ * from your project root directory. It will scan for all `Theme.cfc` and `ModuleConfig.cfc` files and see if they contain `this.minify = { "nameItAsYouLike" :  {}, "nameItAsYouLike2" :  {} }`
+ * .
+ * Make sure that `this.minify` is a valid json. Currently a regex is used to find and parse it.
+ * .
+ * .
+ * {code:js}
+ *	this.minify = {
+ *	"nameItAsYouLike" :  { 'files':  [
+ *	   ,"theme/includes/js/jquery.functions.js"
+ *	   ,"theme/includes/js/jquery.fileupload.js"
+ *	   ,"theme/includes/js/jquery.scripts.js"
+ *  ],
+ *  	 "type": "js"
+ * 		,"name": "jsall"
+ *		,"minified":"willBeFilledAutomatically"
+ *		,"sourceDirectory": "this is your base dir starting from project root. Enter e.g. modules here"
+ *		,"destinationDirectory": "modules/theme/includes/js"
+ *		,"optimization": "none"
+ * }
+ *  ,
+ *  "nameItAsYouLikeN" : { 'files': [
+ *		 "bootstrap41/css/bootstrap.min.css"
+ *		,"css/custom.css"
+ *		,"css/bootstrap-datepicker.css"
+ *	],
+ *		"type": "css"
+ *	 	,"name": "cssall"
+ *		,"minified":"willBeFilledAutomatically"
+ *		,"sourceDirectory": "modules/theme/includes"
+ *		,"destinationDirectory": "modules/theme/includes/css"
+ *	}
+ *  	};
+ * {code}
+ */
 component extends="commandbox.system.BaseCommand" aliases="minify" excludeFromHelp=false {
-
-	property name="shell"						inject="shell";
-
 
 	/**
 	 *
-	 **/
+	 */
 	function run() {
 		var progressBarGeneric	 = getInstance( "progressBarGeneric" );
 		var jscomplier			 = getInstance( "js@commandbox-minify" );
@@ -69,7 +106,7 @@ component extends="commandbox.system.BaseCommand" aliases="minify" excludeFromHe
 				
 		}
 			
-		systemOutput( 'ModuleConfig.cfc or Theme.cfc files checked: #arrayLen(allConfigs)#. Settings parsed: #cnt#', 1 );
+		print.greenLine( 'ModuleConfig.cfc or Theme.cfc files checked: #arrayLen(allConfigs)#. Settings parsed: #cnt#' );
 			
 	}
 	
@@ -96,9 +133,8 @@ component extends="commandbox.system.BaseCommand" aliases="minify" excludeFromHe
 	 **/	
 	void function validateDestination(string destination, progressBarGeneric) {
 		if ( !directoryExists(destination) ) {
-			print.whiteOnRedLine( 'Destination directory: #destination# is not valid' ).toConsole();
 			progressBarGeneric.clear();
-			abort;
+			error( 'Destination directory: #destination# is not valid' );
 		}		
 	}
 
