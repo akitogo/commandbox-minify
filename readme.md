@@ -1,4 +1,4 @@
-﻿# A Commandbox module combines and minifies JavaScript and CSS files
+﻿# A Commandbox module which combines and minifies JavaScript and CSS files
 
 It uses Google Closure Compiler for compression and minification of JS files.
 For CSS a CFML port of YUI compressor is used.
@@ -29,9 +29,18 @@ possible options are: none, WHITESPACE_ONLY, SIMPLE_OPTIMIZATIONS, ADVANCED_OPTI
 
 ## Configuration if used with Coldbox
 
-put this setting in your `Theme.cfc` or `ModuleConfig.cfc`
+put this setting in your `Theme.cfc` or `ModuleConfig.cfc`. Make sure that the syntax is valid Json.
 
-make sure that the syntax is valid Json
+Here is an example file:
+* `nameItAsYouLike` as written, name your block as you like
+* `files` array of files to be minified and combined
+* `type` can be js or css
+* `name` name of the file containing all minified and combined files
+* `minified` after executing `minify` the name plus and hash will be written here
+* `sourceDirectory` this is your base dir starting from web root. Enter e.g. modules here
+* `destinationDirectory` the minfied file will be placed here
+* `optimization` will be used for js minification only, see above ADVANCED_OPTIMIZATIONS
+
 
 ```js
 	this.minify = {
@@ -45,7 +54,7 @@ make sure that the syntax is valid Json
    		 "type": "js"
   		,"name": "jsall"
 		,"minified":"willBeFilledAutomatically"
-		,"sourceDirectory": "this is your base dir starting from project root. Enter e.g. modules here"
+		,"sourceDirectory": "this is your base dir starting from web root. Enter e.g. modules here"
 		,"destinationDirectory": "modules/theme/includes/js"
 		,"optimization": "none"
    }
