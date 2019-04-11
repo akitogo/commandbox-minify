@@ -79,7 +79,7 @@ You can place a `Theme.cfc` anywhere in your project. Add at least `this.minify`
 
 ## Versions
 0.4.1
-* fixing an error with YuiCompressor and inlime images
+* fixing an error with YuiCompressor and inline images
 
 0.4
 * added `box minifycss path/to/css/files/*` or `box mcss path/to/css/files/*` for compressing css files from a location
