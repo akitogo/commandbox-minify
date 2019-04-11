@@ -78,6 +78,9 @@ Here is an example file:
 You can place a `Theme.cfc` anywhere in your project. Add at least `this.minify` structure as mentioned above
 
 ## Versions
+0.4.1
+* fixing an error with YuiCompressor and inlime images
+
 0.4
 * added `box minifycss path/to/css/files/*` or `box mcss path/to/css/files/*` for compressing css files from a location
 * added `box minifjs path/to/css/files` or `box js path/to/js/files` for compressing js files from a location
@@ -95,5 +98,6 @@ You can place a `Theme.cfc` anywhere in your project. Add at least `this.minify`
 * suppress warnings
 * fixes
 
-0.1 initial
+0.1 
+* initial
 
