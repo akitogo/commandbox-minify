@@ -78,6 +78,10 @@ Here is an example file:
 You can place a `Theme.cfc` anywhere in your project. Add at least `this.minify` structure as mentioned above
 
 ## Versions
+0.4.2
+* fixed the CSS compressor breaking `calc()` expressions containing CSS custom properties, e.g. `calc(var(--bs-gutter-x) * .5)` shipped as invalid `var(- - bs-gutter - x)`
+* fixed two crashes in the `rgb()` to hex shortening on the Lucee 6 CommandBox runtime
+
 0.4.1
 * fixing an error with YuiCompressor and inline images
 
