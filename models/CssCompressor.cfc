@@ -337,8 +337,8 @@ component transient {
         while( m.find() ) {
             var rgbcolors 	= listToArray( m.group( 1 ) );
             var hexcolor 	= this.newStringBuffer().append( "##" );
-            for( var i = 1; i lte rgbcolors.length; i++ ) {
-                var value 	= rgbcolors[ i ];
+            for( var i = 1; i lte arrayLen( rgbcolors ); i++ ) {
+                var value 	= trim( rgbcolors[ i ] );
                 if ( value lt 16 ) {
                     hexcolor.append( "0" );
                 }
@@ -463,27 +463,6 @@ component transient {
             css 	= css.replace( "___YUICSSMIN_PRESERVED_TOKEN_" & i & "___", preservedTokens[ i ] );
         }
 
-        // Add spaces back in between operators for css calc function
-        // https://developer.mozilla.org/en-US/docs/Web/CSS/calc
-        // Added by Eric Arnol-Martin (earnolmartin@gmail.com)
-        sb 			= this.newStringBuffer();
-        p 			= this.newPattern( "calc\([^\)]*\)" );
-        m 			= p.matcher( css );
-        while( m.find() ) {
-            var s 	= m.group();
-
-            s 		= s.replaceAll( "(?<=[-|%|px|em|rem|vw|\d]+)\+", " + " );
-            s 		= s.replaceAll( "(?<=[-|%|px|em|rem|vw|\d]+)\-", " - " );
-            s 		= s.replaceAll( "(?<=[-|%|px|em|rem|vw|\d]+)\*", " * " );
-            s 		= s.replaceAll( "(?<=[-|%|px|em|rem|vw|\d]+)\/", " / " );
-
-            m.appendReplacement( sb, s );
-        }
-        m.appendTail( sb );
-        css 		= sb.toString();
-
-
-
         // Trim the final string (for any leading or trailing white spaces)
 		css 		= css.trim();
         var fname   = arguments.name & '-' & adler32( css ) & ".css"
@@ -543,14 +522,34 @@ component transient {
             var foundTerminator = false;
 
             var endIndex = m.end() - 1;
-            while( foundTerminator eq false and endIndex + 1 lte maxIndex ) {
-                endIndex = css.indexOf( terminator, endIndex + 1 );
+            if ( terminator eq ")" ) {
+                // The token content may itself contain balanced parentheses,
+                // e.g. calc(var(--bs-gutter-x) * .5), so the matching close
+                // paren is found by depth counting, not the first ")".
+                var depth = 1;
+                var scanIndex = m.end();
+                while( scanIndex lte maxIndex ) {
+                    var c = css.charAt( scanIndex );
+                    if ( c eq '(' ) {
+                        depth += 1;
+                    } else if ( c eq ')' and css.charAt( scanIndex - 1 ) neq '\' ) {
+                        depth -= 1;
+                        if ( depth eq 0 ) {
+                            endIndex = scanIndex;
+                            foundTerminator = true;
+                            break;
+                        }
+                    }
+                    scanIndex += 1;
+                }
+            } else {
+                while( foundTerminator eq false and endIndex + 1 lte maxIndex ) {
+                    endIndex = css.indexOf( terminator, endIndex + 1 );
 
-                if ( endIndex lte 0 ) {
-                    break;
-                } else if ( ( endIndex gt 0) and ( css.charAt( endIndex - 1 ) != '\' ) ) {
-                    foundTerminator = true;
-                    if ( terminator neq ")" ) {
+                    if ( endIndex lte 0 ) {
+                        break;
+                    } else if ( ( endIndex gt 0) and ( css.charAt( endIndex - 1 ) != '\' ) ) {
+                        foundTerminator = true;
                         endIndex = css.indexOf( ")", endIndex );
                     }
                 }
@@ -585,9 +584,7 @@ component transient {
      * @tocompile 
      */
 	private String function stringToHex( required String stringValue ){
-        var binaryValue 	= stringToBinary( stringValue );
-        var hexValue 		= binaryEncode( binaryValue, "hex" );
-        return( lcase( hexValue ) );
+        return( lcase( formatBaseN( arguments.stringValue, 16 ) ) );
     }
 
     /**
