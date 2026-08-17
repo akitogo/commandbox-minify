@@ -6,8 +6,8 @@
     "directory":"",
     "createPackageDirectory":true,
     "packageDirectory":"",
-    "homepage":"",
-    "documentation":"",
+    "homepage":"https://github.com/akitogo/commandbox-minify",
+    "documentation":"https://github.com/akitogo/commandbox-minify",
     "repository":{
         "type":"github",
         "URL":"https://github.com/akitogo/commandbox-minify"
