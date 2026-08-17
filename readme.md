@@ -15,6 +15,8 @@ box install commandbox-minify
 
 `box minifjs "path/to/js/files/*"` or `box mjs "path/to/js/files/*"` for compressing js files from a location
 
+Add `--!combine` to minify every file into its own output file instead of combining them into one, e.g. `box mcss "path/to/css/files/*" --!combine`
+
 Call this (if you want to use it with Coldbox)
 ```bash
 box minify
@@ -40,6 +42,7 @@ Here is an example file:
 * `sourceDirectory` this is your base dir starting from web root. Enter e.g. modules here
 * `destinationDirectory` the minfied file will be placed here
 * `optimization` will be used for js minification only, see above ADVANCED_OPTIMIZATIONS
+* `combine` optional, defaults to true. Set to false to minify every file into its own output file (named after the source file plus hash) instead of combining them into one. `minified` will then contain a comma separated list of the generated file names
 
 
 ```js
@@ -78,6 +81,11 @@ Here is an example file:
 You can place a `Theme.cfc` anywhere in your project. Add at least `this.minify` structure as mentioned above
 
 ## Versions
+0.5.0
+* added `combine` option (`"combine": false` in `this.minify`, `--!combine` for `minifyjs`/`minifycss`) to minify every file into its own output file instead of combining them into one (issue [#1](https://github.com/akitogo/commandbox-minify/issues/1))
+* the `optimization` setting from `this.minify` is now actually passed to the Closure Compiler
+* fixed css files of a previous bundle leaking into the next one when a single `minify` run processes several css bundles
+
 0.4.2
 * fixed the CSS compressor breaking `calc()` expressions containing CSS custom properties, e.g. `calc(var(--bs-gutter-x) * .5)` shipped as invalid `var(- - bs-gutter - x)`
 * fixed two crashes in the `rgb()` to hex shortening on the Lucee 6 CommandBox runtime

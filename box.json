@@ -1,6 +1,6 @@
 {
     "name":"commandbox-minify",
-    "version":"0.4.2",
+    "version":"0.5.0",
     "author":"Dmitry Romanchuk,Gunnar Lieb,Matthias Richter",
     "location":"https://github.com/akitogo/commandbox-minify/archive/master.zip",
     "directory":"",

@@ -471,6 +471,9 @@ component transient {
 			fileDelete( file );
 		fileWrite( file, css );
 
+		// reset state so the same instance can compress another set of files
+		variables.srcsb	= this.newStringBuffer();
+		variables.files	= [];
 
 		return fname;
 	}

@@ -86,17 +86,39 @@ component extends="commandbox.system.BaseCommand" aliases="minify" excludeFromHe
 				var destination 	= currentDirectory&aSetting['destinationDirectory'];
 
 				validateDestination(destination,progressBarGeneric);
-				
+
+				// combine (default true) merges all files into one output file,
+				// combine:false minifies every file into its own output file
+				var combine			= aSetting.keyExists('combine') ? aSetting['combine'] : true;
+				var optimization	= aSetting.keyExists('optimization') ? aSetting['optimization'] : 'none';
+
 				switch (aSetting['type']) {
 					case "js":
-					var fileNameOfCompressed	= jscomplier.compile(fileArray,destination,aSetting['name']);
+					if( combine ){
+						var fileNameOfCompressed	= jscomplier.compile(fileArray,destination,aSetting['name'],optimization);
+					} else {
+						var compressedNames			= [];
+						for (var aFile in fileArray){
+							compressedNames.append( jscomplier.compile([aFile],destination,baseName(aFile),optimization) );
+						}
+						var fileNameOfCompressed	= arrayToList(compressedNames);
+					}
 					break;
-					
+
 					case "css":
-					cssCompressor.add( fileArray );
-					var fileNameOfCompressed	= csscompressor.compress( aSetting['name'], destination );
+					if( combine ){
+						cssCompressor.add( fileArray );
+						var fileNameOfCompressed	= csscompressor.compress( aSetting['name'], destination );
+					} else {
+						var compressedNames			= [];
+						for (var aFile in fileArray){
+							cssCompressor.add( aFile );
+							compressedNames.append( csscompressor.compress( baseName(aFile), destination ) );
+						}
+						var fileNameOfCompressed	= arrayToList(compressedNames);
+					}
 					break;
-					
+
 					default:
 					throw('type must be either CSS or JS in #confpath#');
 					break;
@@ -172,6 +194,13 @@ component extends="commandbox.system.BaseCommand" aliases="minify" excludeFromHe
 			ac++;
 		}
 
-		return jsFiles;	
-	}	
+		return jsFiles;
+	}
+
+	/**
+	 * file name without directory and extension, e.g. /path/jquery.functions.js -> jquery.functions
+	 **/
+	string function baseName(string filePath) {
+		return reReplace( getFileFromPath( filePath ), '\.[^.]*$', '' );
+	}
 }
