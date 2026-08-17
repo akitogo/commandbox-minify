@@ -13,7 +13,12 @@ component  {
 
 		// can set this true for debug
         CompilerOptions.setPrettyPrint( javaCast( "boolean", false ) );
-        
+
+        // minify only, keep the language level of the source instead of transpiling down
+        var languageMode = createObject( "java", "com.google.javascript.jscomp.CompilerOptions$LanguageMode", getcompilerJarPath() );
+        CompilerOptions.setLanguageIn( languageMode.ECMASCRIPT_NEXT );
+        CompilerOptions.setLanguageOut( languageMode.NO_TRANSPILE );
+
         // there are still messages
         createObject( "java", "com.google.javascript.jscomp.WarningLevel", getcompilerJarPath() ).QUIET.setOptionsForWarningLevel( CompilerOptions );
 
@@ -27,6 +32,15 @@ component  {
                 getInputArray(jsFiles),
                 CompilerOptions
         );
+
+        if( !result.success ) {
+            var errorMessages = [];
+            for( var jsError in result.errors ) {
+                errorMessages.append( jsError.toString() );
+            }
+            throw( 'Closure Compiler could not compile #arrayToList(jsFiles)#: #arrayToList(errorMessages, '; ')#' );
+        }
+
         var ad32    = adler32(compiler.toSource());
         var fName   = name & "-" & ad32 & ".js";
         FileWrite( destination&"/"&fname , compiler.toSource() );    
@@ -92,7 +106,7 @@ component  {
 		// find jar path
 		var path		=   getDirectoryFromPath( getCurrentTemplatePath() );
 
-        return expandpath(path&'../lib/closure-compiler-v20190301.jar');
+        return expandpath(path&'../lib/closure-compiler-v20260607.jar');
     }           
 
     /**

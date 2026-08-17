@@ -81,6 +81,11 @@ Here is an example file:
 You can place a `Theme.cfc` anywhere in your project. Add at least `this.minify` structure as mentioned above
 
 ## Versions
+0.5.1
+* updated Closure Compiler from v20190301 to v20260607, so modern js syntax (optional chaining, nullish coalescing, class fields, async/await, modules) compiles. Note: private class fields (`##foo`) are still unsupported by Closure Compiler itself
+* js compilation runs with languageOut NO_TRANSPILE now: the output keeps the language level of the source, nothing is transpiled down to ES5 anymore
+* a failed js compile now aborts with the compiler errors instead of silently writing an empty output file
+
 0.5.0
 * added `combine` option (`"combine": false` in `this.minify`, `--!combine` for `minifyjs`/`minifycss`) to minify every file into its own output file instead of combining them into one (issue [#1](https://github.com/akitogo/commandbox-minify/issues/1))
 * the `optimization` setting from `this.minify` is now actually passed to the Closure Compiler
